@@ -1,0 +1,9 @@
+syntax "proto3";
+package kevin.consensus;
+
+import "consensus.proto";
+
+Service RaftLogService {
+    rpc VoteMe(VoteMeRequest) returns (VoteMeResponse) {}
+    rpc AppendLog(AppendLogRequest) returns (AppendLogResponse) {}
+}
