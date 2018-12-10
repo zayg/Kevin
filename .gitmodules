@@ -1,0 +1,6 @@
+[submodule "thirdparty/leveldb"]
+	path = thirdparty/leveldb
+	url = https://github.com/google/leveldb.git
+[submodule "thirdparty/ananas"]
+	path = thirdparty/ananas
+	url = https://github.com/zayg/ananas.git
