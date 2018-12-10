@@ -7,3 +7,6 @@
 [submodule "thirdparty/protobuf"]
 	path = thirdparty/protobuf
 	url = https://github.com/protocolbuffers/protobuf.git
+[submodule "thirdparty/raft.tla"]
+	path = thirdparty/raft.tla
+	url = https://github.com/ongardie/raft.tla.git
