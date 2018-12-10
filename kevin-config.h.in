@@ -1,0 +1,6 @@
+#define KEVIN_VERSION_MAJOR @KEVIN_VERSION_MAJOR@
+#define KEVIN_VERSION_MINOR @KEVIN_VERSION_MINOR@
+// flag for special code path under debug mode
+#cmakedefine KEVIN_DEBUG
+// flag for special code path under regret (error injection) mode.
+#cmakedefine KEVIN_REGRET

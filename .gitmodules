@@ -4,3 +4,6 @@
 [submodule "thirdparty/ananas"]
 	path = thirdparty/ananas
 	url = https://github.com/zayg/ananas.git
+[submodule "thirdparty/protobuf"]
+	path = thirdparty/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
