@@ -1,9 +1,9 @@
-syntax "proto3";
+syntax = "proto3";
 package kevin.consensus;
 
 import "consensus.proto";
 
-Service RaftLogService {
+service RaftLog {
     rpc VoteMe(VoteMeRequest) returns (VoteMeResponse) {}
     rpc AppendLog(AppendLogRequest) returns (AppendLogResponse) {}
 }

@@ -1,4 +1,4 @@
-syntax "proto3";
+syntax = "proto3";
 package kevin.consensus;
 
 message VoteMeRequest {
@@ -32,7 +32,7 @@ message AppendLogRequest {
     repeated bytes logs = 9;
 
     // leader's commit index of logs
-    leader_commit = 10;
+    int64 leader_commit = 10;
 }
 
 message AppendLogResponse {

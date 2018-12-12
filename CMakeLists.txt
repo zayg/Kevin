@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 
 if(UNIX)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
 endif()
 
 set (KEVIN_VERSION_MAJOR 0)
@@ -23,11 +23,12 @@ configure_file (
     )
        
 include ("${PROJECT_SOURCE_DIR}/thirdparty/thirdparty.cmake")
+include ("${PROJECT_SOURCE_DIR}/proto/proto.cmake")
 
 include_directories (
     # so that we will find kevin-config.h
     "${PROJECT_BINARY_DIR}"
-    "${THIRDPARTY_INCLUDES}")
+    "${KEVIN_THIRDPARTY_INCLUDES}")
 
 add_subdirectory ("${PROJECT_SOURCE_DIR}/server")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/client")
