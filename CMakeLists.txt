@@ -7,7 +7,8 @@ endif()
 set (KEVIN_VERSION_MAJOR 0)
 set (KEVIN_VERSION_MINOR 1)
 
-project (Kevin VERSION "${KEVIN_VERSION_MAJOR}.${KEVIN_VERSION_MINOR}" LANGUAGES "CXX")
+project (Kevin VERSION "${KEVIN_VERSION_MAJOR}.${KEVIN_VERSION_MINOR}"
+               LANGUAGES "CXX")
 
 set (PROJECT_BINARY_DIR "${PROJECT_SOURCE_DIR}/build")
 
@@ -23,12 +24,13 @@ configure_file (
     )
        
 include ("${PROJECT_SOURCE_DIR}/thirdparty/thirdparty.cmake")
-include ("${PROJECT_SOURCE_DIR}/proto/proto.cmake")
-
 include_directories (
     # so that we will find kevin-config.h
+    "${PROJECT_SOURCE_DIR}"
     "${PROJECT_BINARY_DIR}"
     "${KEVIN_THIRDPARTY_INCLUDES}")
+include ("${PROJECT_SOURCE_DIR}/proto/proto.cmake")
+include ("${PROJECT_SOURCE_DIR}/common/common.cmake")
 
 add_subdirectory ("${PROJECT_SOURCE_DIR}/server")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/client")
