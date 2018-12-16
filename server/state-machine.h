@@ -1,17 +1,23 @@
 #pragma once
 #include <common/error.h>
 
-class IRaftState;
+namespace kevin {
+namespace consensus {
+
 class VoteMeRequest;
 class VoteMeResponse;
 class AppendLogRequest;
 class AppendLogResponse;
+class IRaftState;
 
 class RaftStateMachine {
 public:
-    Error handleVote(const VoteMeRequest &req, VoteMeResponse *resp);
-    Error handleLog(AppendLogRequest &req, AppendLogResponse *resp);
-    Error handleElectionTimerExpired();
+    kevin::common::Error handleVote(const VoteMeRequest &req, VoteMeResponse *resp);
+    kevin::common::Error handleLog(AppendLogRequest &req, AppendLogResponse *resp);
+    kevin::common::Error handleElectionTimerExpired();
 private:
     IRaftState *mState = nullptr;
 };
+
+} // namespace kevin
+} // namespace consensus

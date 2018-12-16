@@ -21,6 +21,5 @@ add_custom_command (
     DEPENDS kevin-protoc
     )
 
-set_source_files_properties(${KEVIN_PROTO_SRCS} PROPERTIES GENERATED TRUE)
 add_library (kevin-proto OBJECT ${KEVIN_PROTO_SRCS})
 

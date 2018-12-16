@@ -16,7 +16,7 @@ set (KEVIN_THIRDPARTY_INCLUDES
     "${PROJECT_SOURCE_DIR}/thirdparty/leveldb/include")
 set (KEVIN_THIRDPARTY_PROTOC "${PROJECT_BINARY_DIR}/thirdparty/protobuf/protoc")
 
-add_custom_target (kevin-protoc DEPENDS libprotoc)
+add_custom_target (kevin-protoc DEPENDS protoc)
 # TODO(yihao) try to make kevin-thirdparties a true target
 set (kevin-thirdparties libprotobuf leveldb)
 
