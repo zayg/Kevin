@@ -6,7 +6,6 @@ add_executable (kevin
     $<TARGET_OBJECTS:kevin-proto>
     $<TARGET_OBJECTS:kevin-common>
     $<TARGET_OBJECTS:kevin-logging>
-    $<TARGET_OBJECTS:kevin-test>
     )
 target_link_libraries(kevin ${kevin-thirdparties})
 install (TARGETS kevin RUNTIME DESTINATION ${PROJECT_BINARY_DIR}/bin)
