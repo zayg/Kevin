@@ -9,7 +9,9 @@ static char sErrorDef[static_cast<int>(ErrorDef::KEVIN_LAST)][64] = {
    "KEVIN_NO_ERROR"
 };
 
-std::string errorDefToString(ErrorDef errDef) {
+std::string
+errorDefToString(ErrorDef errDef)
+{
     return sErrorDef[static_cast<int>(errDef)];
 }
 

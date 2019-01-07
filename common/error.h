@@ -1,16 +1,24 @@
 #pragma once
 #include <errno.h>
+#include <stdlib.h>
 #include <string>
 
 #define KEVIN_OK kevin::common::Error();
 #define KEVIN_ERROR(catagory, errno, message) \
     kevin::common::Error(kevin::common:: ## catagory, errno, message) \
 
+#define KEVIN_ASSERT(predicate, comment) \
+    if (!(predicate)) { \
+        std::cerr << (comment) << std::endl << std::flush; \
+        ::abort(); \
+    } \
+
 namespace kevin {
 namespace common {
 
-enum class ErrorDef {
+enum class ErrorDef : int {
     KEVIN_NO_ERROR = 0,
+    KEVIN_LOGGING,
     // always to be the last one
     KEVIN_LAST,
 };
@@ -26,7 +34,15 @@ public:
     Error(Error &&) = default;
     Error & operator=(const Error &) = default;
 
-    inline std::string toString() {
+    inline bool
+    ok()
+    {
+        return m_errno == 0;
+    }
+
+    inline std::string
+    toString()
+    {
         std::string str;
         str.reserve(256);
         str.append("{ Catagory: ").append(errorDefToString(m_catagory))

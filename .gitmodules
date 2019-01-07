@@ -10,3 +10,6 @@
 [submodule "thirdparty/raft.tla"]
 	path = thirdparty/raft.tla
 	url = https://github.com/ongardie/raft.tla.git
+[submodule "thirdparty/jsoncpp"]
+	path = thirdparty/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git

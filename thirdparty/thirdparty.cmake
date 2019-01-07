@@ -11,9 +11,15 @@ set (LEVELDB_BUILD_TESTS OFF CACHE BOOL "Close LEVELDB_BUILD_TESTS to avoid the 
 set (LEVELDB_BUILD_BENCHMARKS OFF CACHE BOOL "Close LEVELDB_BUILD_BENCHMARKS to avoid the benchmark compilation.")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/thirdparty/leveldb" "${THIRDPARTY_CMAKE}/leveldb")
 
+message (STATUS "Start building JsonCpp...")
+set (LEVELDB_BUILD_TESTS OFF CACHE BOOL "Close LEVELDB_BUILD_TESTS to avoid the test compilation.")
+set (LEVELDB_BUILD_BENCHMARKS OFF CACHE BOOL "Close LEVELDB_BUILD_BENCHMARKS to avoid the benchmark compilation.")
+add_subdirectory ("${PROJECT_SOURCE_DIR}/thirdparty/jsoncpp" "${THIRDPARTY_CMAKE}/jsoncpp")
+
 set (KEVIN_THIRDPARTY_INCLUDES
     "${PROJECT_SOURCE_DIR}/thirdparty/protobuf/src/"
-    "${PROJECT_SOURCE_DIR}/thirdparty/leveldb/include")
+    "${PROJECT_SOURCE_DIR}/thirdparty/leveldb/include"
+    "${PROJECT_SOURCE_DIR}/thirdparty/jsoncpp/include")
 set (KEVIN_THIRDPARTY_PROTOC "${PROJECT_BINARY_DIR}/thirdparty/protobuf/protoc")
 
 add_custom_target (kevin-protoc DEPENDS protoc)
