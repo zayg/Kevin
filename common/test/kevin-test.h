@@ -12,7 +12,7 @@
         throw std::runtime_error(std::string(# x) + " failed!"); \
     }
 
-#define KEVIN_TEST_ASSERT_EQ(x, y) KEVIN_ASSERT((x) == (y))
+#define KEVIN_TEST_ASSERT_EQ(x, y) KEVIN_TEST_ASSERT((x) == (y))
 
 // TODO(yihao) not supported yet
 #define KEVIN_EXPECT
