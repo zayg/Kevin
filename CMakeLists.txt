@@ -31,6 +31,7 @@ include_directories (
     "${KEVIN_THIRDPARTY_INCLUDES}")
 include ("${PROJECT_SOURCE_DIR}/proto/proto.cmake")
 include ("${PROJECT_SOURCE_DIR}/common/common.cmake")
+include ("${PROJECT_SOURCE_DIR}/raft/raft.cmake")
 
 add_subdirectory ("${PROJECT_SOURCE_DIR}/server")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/client")

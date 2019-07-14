@@ -1,0 +1,51 @@
+syntax = "proto3";
+package kevin.raft;
+
+message ReplicaId {
+    // identifier of the raft group
+    int64 cluster_id = 1;
+    // ip address of the replica
+    int64 server_id = 2;
+}
+
+message VoteRequest {
+    // candidate's term
+    int64 term = 1;
+    // candidate's last log cursor
+    int64 latest_lsn = 2;
+    int64 latest_term = 3;
+    // voting candidate
+    ReplicaId candidate = 4;
+}
+
+message VoteResponse {
+    int32 error_code = 1;
+    // the current term after VoteMe, for candidates to update themselves
+    int64 term = 2;
+    // the vote count granted to the candidate
+    uint32 vote = 3;
+}
+
+message AppendLogRequest {
+    // leader's term
+    int64 term = 1;
+    // leader's commit lsn of logs
+    int64 local_committed_lsn = 2;
+    ReplicaId leader = 3;
+
+    // log meta informations
+    int64 prev_lsn = 5;
+    int64 prev_term = 6;
+
+    // log data
+    repeated bytes logs = 9;
+}
+
+message AppendLogResponse {
+    int32 error_code = 1;
+    // the current term after AppendLog, for leader to update itself
+    int64 term = 2;
+    // if the follower has applied these logs or not
+    bool success = 3;
+}
+

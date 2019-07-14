@@ -6,7 +6,8 @@ namespace kevin {
 namespace common {
 
 static char sErrorDef[static_cast<int>(ErrorDef::KEVIN_LAST)][64] = {
-   "KEVIN_NO_ERROR"
+   "KEVIN_NO_ERROR",
+   "KEVIN_LOGGING",
 };
 
 std::string

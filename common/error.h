@@ -30,6 +30,7 @@ public:
     Error(ErrorDef catagory, int errno, const std::string &&message);
 
     // explicitly declare these constructors for readability
+    Error() = default;
     Error(const Error &) = default;
     Error(Error &&) = default;
     Error & operator=(const Error &) = default;

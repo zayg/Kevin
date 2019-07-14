@@ -1,0 +1,9 @@
+syntax = "proto3";
+package kevin.raft;
+
+import "raft.proto";
+
+service RaftLog {
+    rpc Vote(VoteRequest) returns (VoteResponse) {}
+    rpc AppendLog(AppendLogRequest) returns (AppendLogResponse) {}
+}
