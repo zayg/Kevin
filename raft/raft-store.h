@@ -1,5 +1,6 @@
 #pragma once
 
+#include "raft/raft-common.h"
 #include "proto/raft.pb.h"
 
 namespace kevin {
@@ -13,10 +14,21 @@ public:
     ReplicaId  votee_;
 
     /// volatile meta
-    // Logs have been committed to users until committedIdx_ (included).
-    int64_t committedLsn_ = 0;
+    // Logs have been durable until (latestTerm_, latestLsn_) (included).
+    int64_t latestTerm_ = 0;
+    int64_t latestLsn_ = 0;
     // Logs have been applied into RSM until appliedIdx_ (included).
     int64_t appliedLsn_ = 0;
+
+public:
+    // Persist (term, votee) in a asynchronous way.
+    // Cb is called at the last phase.
+    kevin::raft::RaftError persistVotee(
+            const int64_t term,
+            const ReplicaId &candidate,
+            std::function<void ()> &&cb);
+
+    bool hasPersistedVotee(int64_t term);
 };
 
 class RaftDataStore {

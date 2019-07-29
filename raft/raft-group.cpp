@@ -5,6 +5,8 @@
 
 #include "proto/raft.pb.h"
 
+#include <memory>
+
 using namespace kevin::raft;
 
 
@@ -73,30 +75,38 @@ RaftGroup::_handleUserLog(const Log &log)
 RaftError
 RaftGroup::_handleVoteRequest(
         const VoteRequest &req,
+        RaftStateType *stateChangeTo,
+        std::function<void(VoteResponse *)> &&cb)
+{
+    return m_state->_handleVoteRequest(req, stateChangeTo, std::move(cb));
+}
+
+
+RaftError
+RaftGroup::_handleVoteResponse(
+        const VoteResponse &resp,
         RaftStateType *stateChangeTo)
 {
-    return m_state->_handleVoteRequest(req, stateChangeTo);
+    return m_state->_handleVoteResponse(resp, stateChangeTo);
 }
 
 
 RaftError
-RaftGroup::_handleVoteResponse(const VoteResponse &resp)
+RaftGroup::_handleAppendLogRequest(
+        const AppendLogRequest &req,
+        RaftStateType *stateChangeTo,
+        std::function<void(AppendLogResponse *)> &&cb)
 {
-    return m_state->_handleVoteResponse(resp);
+    return m_state->_handleAppendLogRequest(req, stateChangeTo, std::move(cb));
 }
 
 
 RaftError
-RaftGroup::_handleAppendLogRequest(const AppendLogRequest &req)
+RaftGroup::_handleAppendLogResponse(
+        const AppendLogResponse &resp,
+        RaftStateType *stateChangeTo)
 {
-    return m_state->_handleAppendLogRequest(req);
-}
-
-
-RaftError
-RaftGroup::_handleAppendLogResponse(const AppendLogResponse &resp)
-{
-    return m_state->_handleAppendLogResponse(resp);
+    return m_state->_handleAppendLogResponse(resp, stateChangeTo);
 }
 
 
@@ -104,13 +114,6 @@ RaftError
 RaftGroup::_handleElectionTimerExpired()
 {
     return m_state->_handleElectionTimerExpired();
-}
-
-
-RaftError
-RaftGroup::_handleNewTerm(int64_t term)
-{
-    return m_state->_handleNewTerm(term);
 }
 
 

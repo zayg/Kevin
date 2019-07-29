@@ -27,13 +27,23 @@ protected:
 
     kevin::raft::RaftError _handleVoteRequest(
             const VoteRequest &req,
+            RaftStateType *stateChangeTo,
+            std::function<void(VoteResponse *)> &&cb) final;
+
+    kevin::raft::RaftError _handleVoteResponse(
+            const VoteResponse &resp,
             RaftStateType *stateChangeTo) final;
 
-    kevin::raft::RaftError _handleVoteResponse(const VoteResponse &resp) final;
-    kevin::raft::RaftError _handleAppendLogRequest(const AppendLogRequest &req) final;
-    kevin::raft::RaftError _handleAppendLogResponse(const AppendLogResponse &resp) final;
+    kevin::raft::RaftError _handleAppendLogRequest(
+            const AppendLogRequest &req,
+            RaftStateType *stateChangeTo,
+            std::function<void(AppendLogResponse *)> &&cb) final;
+
+    kevin::raft::RaftError _handleAppendLogResponse(
+            const AppendLogResponse &resp,
+            RaftStateType *stateChangeTo) final;
+
     kevin::raft::RaftError _handleElectionTimerExpired() final;
-    kevin::raft::RaftError _handleNewTerm(int64_t term) final;
 
 private:
     RaftGroup *m_raftGroup;
@@ -51,13 +61,23 @@ protected:
 
     kevin::raft::RaftError _handleVoteRequest(
             const VoteRequest &req,
+            RaftStateType *stateChangeTo,
+            std::function<void(VoteResponse *)> &&cb) final;
+
+    kevin::raft::RaftError _handleVoteResponse(
+            const VoteResponse &resp,
             RaftStateType *stateChangeTo) final;
 
-    kevin::raft::RaftError _handleVoteResponse(const VoteResponse &resp) final;
-    kevin::raft::RaftError _handleAppendLogRequest(const AppendLogRequest &req) final;
-    kevin::raft::RaftError _handleAppendLogResponse(const AppendLogResponse &resp) final;
+    kevin::raft::RaftError _handleAppendLogRequest(
+            const AppendLogRequest &req,
+            RaftStateType *stateChangeTo,
+            std::function<void(AppendLogResponse *)> &&cb) final;
+
+    kevin::raft::RaftError _handleAppendLogResponse(
+            const AppendLogResponse &resp,
+            RaftStateType *stateChangeTo) final;
+
     kevin::raft::RaftError _handleElectionTimerExpired() final;
-    kevin::raft::RaftError _handleNewTerm(int64_t term) final;
 
 private:
     RaftGroup *m_raftGroup;
@@ -75,13 +95,23 @@ protected:
 
     kevin::raft::RaftError _handleVoteRequest(
             const VoteRequest &req,
+            RaftStateType *stateChangeTo,
+            std::function<void(VoteResponse *)> &&cb) final;
+
+    kevin::raft::RaftError _handleVoteResponse(
+            const VoteResponse &resp,
             RaftStateType *stateChangeTo) final;
 
-    kevin::raft::RaftError _handleVoteResponse(const VoteResponse &resp) final;
-    kevin::raft::RaftError _handleAppendLogRequest(const AppendLogRequest &req) final;
-    kevin::raft::RaftError _handleAppendLogResponse(const AppendLogResponse &resp) final;
+    kevin::raft::RaftError _handleAppendLogRequest(
+            const AppendLogRequest &req,
+            RaftStateType *stateChangeTo,
+            std::function<void(AppendLogResponse *)> &&cb) final;
+
+    kevin::raft::RaftError _handleAppendLogResponse(
+            const AppendLogResponse &resp,
+            RaftStateType *stateChangeTo) final;
+
     kevin::raft::RaftError _handleElectionTimerExpired() final;
-    kevin::raft::RaftError _handleNewTerm(int64_t term) final;
 
 private:
     RaftGroup *m_raftGroup;
