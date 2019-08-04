@@ -50,7 +50,9 @@ protected:
             const AppendLogResponse &resp,
             RaftStateType *stateChangeTo) = 0;
 
-    virtual kevin::raft::RaftError _handleElectionTimerExpired() = 0;
+    virtual kevin::raft::RaftError _handleElectionTimerExpired(
+            int64_t term,
+            RaftStateType *stateChangeTo) = 0;
 
     friend class RaftGroup;
 };

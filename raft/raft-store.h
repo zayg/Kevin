@@ -29,6 +29,22 @@ public:
             std::function<void ()> &&cb);
 
     bool hasPersistedVotee(int64_t term);
+
+    inline bool
+    staleThan(int64_t term, int64_t lsn)
+    {
+        return latestTerm_ < term || latestLsn_ <= lsn;
+    }
+
+    inline bool
+    updateTerm(int64_t term)
+    {
+        if (term_ < term) {
+            term_ = term;
+            return true;
+        }
+        return false;
+    }
 };
 
 class RaftDataStore {

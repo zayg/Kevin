@@ -7,7 +7,6 @@
 
 #include <google/protobuf/util/message_differencer.h>
 
-using namespace kevin::raft;
 using namespace google::protobuf::util;
 
 
@@ -31,21 +30,24 @@ using namespace google::protobuf::util;
 // share the disk IO threads for ticking.
 
 
-#define REJECT_LOWER_TERM(request, response) \
-    if ((request).term() < m_raftGroup->m_metaStore->term_) { \
+#define REJECT_LOWER_TERM(metaStore, request, response) \
+    if ((request).term() < metaStore->term_) { \
         (response).set_error_code(int32_t(RaftError::RAFT_INVALID_TERM)); \
-        (response).set_term(m_raftGroup->m_metaStore->term_); \
+        (response).set_term(metaStore->term_); \
         cb(&(response)); \
         return static_cast<RaftError>((response).error_code()); \
     } \
 
-#define CHECK_FOLLOWER_TRANSFER(message, stateChangeTo) \
+#define ACCEPT_HIGHER_TERM(message, stateChangeTo) \
     if ((message).term() > m_raftGroup->m_metaStore->term_) { \
         m_raftGroup->m_metaStore->term_ = (message).term(); \
         stateChangeTo = RaftStateType::RAFT_STATE_FOLLOWER; \
         return RaftError::RAFT_OK; \
     } \
 
+
+namespace kevin {
+namespace raft {
 
 RaftError
 RaftFollower::_handleUserLog(const Log &log)
@@ -55,18 +57,16 @@ RaftFollower::_handleUserLog(const Log &log)
 
 
 RaftError
-RaftFollower::_handleVoteRequest(
+_handleVoteRequest(
         const VoteRequest &req,
+        RaftMetaStore *metaStore,
         RaftStateType *stateChangeTo,
         std::function<void(VoteResponse *)> &&cb)
 {
     // Initialized with errc = 0, term = 0, vote = 0.
-    VoteResponse *resp = new VoteResponse();
+    auto *resp = new VoteResponse();
 
-    // Initialize with its original state.
-    *stateChangeTo = this->m_type;
-
-    REJECT_LOWER_TERM(req, *resp);
+    REJECT_LOWER_TERM(metaStore, req, *resp);
     
     // It is safe to update the term here in memory only.
     // The reason is it doestn't violate the 3 invariants:
@@ -78,17 +78,13 @@ RaftFollower::_handleVoteRequest(
     //    then in recovery we can recover the term (no need to persist here).
     //
     // TODO(yihao) Anyway need a provement.
-    if (m_raftGroup->m_metaStore->term_ < req.term()) {
-        m_raftGroup->m_metaStore->term_ = req.term();
-    }
+    metaStore->updateTerm(req.term());
 
-    auto *metaStore = m_raftGroup->m_metaStore;
     bool noVoteYet = !metaStore->hasPersistedVotee(req.term());
     if ((noVoteYet
             || MessageDifferencer::Equivalent(metaStore->votee_, req.candidate()))
-        // If the candidate's lsn is at least as new as the follower
-        && (metaStore->latestTerm_ < req.latest_term()
-            || metaStore->latestLsn_ <= req.latest_lsn())) {
+        // If the candidate's lsn is at least as new as here
+        && metaStore->staleThan(req.latest_term(), req.latest_lsn())) {
 
         resp->set_vote(1);
         // TODO(yihao) Can we change to follower before persist the new votee?
@@ -106,11 +102,25 @@ RaftFollower::_handleVoteRequest(
 
 
 RaftError
+RaftFollower::_handleVoteRequest(
+        const VoteRequest &req,
+        RaftStateType *stateChangeTo,
+        std::function<void(VoteResponse *)> &&cb)
+{
+    // Initialize with its original state.
+    *stateChangeTo = m_type;
+    return kevin::raft::_handleVoteRequest(
+            req, m_raftGroup->m_metaStore, stateChangeTo, std::move(cb));
+}
+
+
+RaftError
 RaftFollower::_handleVoteResponse(
         const VoteResponse &resp,
         RaftStateType *stateChangeTo)
 {
-    CHECK_FOLLOWER_TRANSFER(resp, *stateChangeTo);
+    *stateChangeTo = m_type;
+    ACCEPT_HIGHER_TERM(resp, *stateChangeTo);
     return RaftError::RAFT_OK;
 }
 
@@ -121,8 +131,16 @@ RaftFollower::_handleAppendLogRequest(
         RaftStateType *stateChangeTo,
         std::function<void(AppendLogResponse *)> &&cb)
 {
-    RaftError err;
-    return err;
+    // Initialized with errc = 0, term = 0, vote = 0.
+    auto *resp = new AppendLogResponse();
+
+    // Initialize with its original state.
+    *stateChangeTo = m_type;
+
+    auto *metaStore = m_raftGroup->m_metaStore;
+    REJECT_LOWER_TERM(metaStore, req, *resp);
+
+    return RaftError::RAFT_OK;
 }
 
 
@@ -131,16 +149,23 @@ RaftFollower::_handleAppendLogResponse(
         const AppendLogResponse &resp,
         RaftStateType *stateChangeTo)
 {
-    CHECK_FOLLOWER_TRANSFER(resp, *stateChangeTo);
+    *stateChangeTo = m_type;
+    ACCEPT_HIGHER_TERM(resp, *stateChangeTo);
     return RaftError::RAFT_OK;
 }
 
 
 RaftError
-RaftFollower::_handleElectionTimerExpired()
+RaftFollower::_handleElectionTimerExpired(int64_t term, RaftStateType *stateChangeTo)
 {
-    RaftError err;
-    return err;
+    *stateChangeTo = m_type;
+    auto *metaStore = m_raftGroup->m_metaStore;
+    // Ignore lower term timer expirations.
+    if (metaStore->term_ <= term) {
+        metaStore->term_ = term; 
+        *stateChangeTo = RaftStateType::RAFT_STATE_CANDIDATE;
+    }
+    return RaftError::RAFT_OK;
 }
 
 
@@ -158,8 +183,10 @@ RaftCandidate::_handleVoteRequest(
         RaftStateType *stateChangeTo,
         std::function<void(VoteResponse *)> &&cb)
 {
-    RaftError err;
-    return err;
+    // Initialize with its original state.
+    *stateChangeTo = m_type;
+    return kevin::raft::_handleVoteRequest(
+            req, m_raftGroup->m_metaStore, stateChangeTo, std::move(cb));
 }
 
 
@@ -195,7 +222,7 @@ RaftCandidate::_handleAppendLogResponse(
 
 
 RaftError
-RaftCandidate::_handleElectionTimerExpired()
+RaftCandidate::_handleElectionTimerExpired(int64_t term, RaftStateType *stateChangeTo)
 {
     RaftError err;
     return err;
@@ -216,8 +243,10 @@ RaftLeader::_handleVoteRequest(
         RaftStateType *stateChangeTo,
         std::function<void(VoteResponse *)> &&cb)
 {
-    RaftError err;
-    return err;
+    // Initialize with its original state.
+    *stateChangeTo = m_type;
+    return kevin::raft::_handleVoteRequest(
+            req, m_raftGroup->m_metaStore, stateChangeTo, std::move(cb));
 }
 
 
@@ -253,10 +282,11 @@ RaftLeader::_handleAppendLogResponse(
 
 
 RaftError
-RaftLeader::_handleElectionTimerExpired()
+RaftLeader::_handleElectionTimerExpired(int64_t term, RaftStateType *stateChangeTo)
 {
     RaftError err;
     return err;
 }
 
-
+} // namespace kevin
+} // namespace raft 

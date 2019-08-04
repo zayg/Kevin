@@ -111,9 +111,11 @@ RaftGroup::_handleAppendLogResponse(
 
 
 RaftError
-RaftGroup::_handleElectionTimerExpired()
+RaftGroup::_handleElectionTimerExpired(
+        int64_t term,
+        RaftStateType *stateChangeTo)
 {
-    return m_state->_handleElectionTimerExpired();
+    return m_state->_handleElectionTimerExpired(term, stateChangeTo);
 }
 
 

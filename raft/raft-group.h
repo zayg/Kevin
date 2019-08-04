@@ -72,7 +72,9 @@ protected:
             const AppendLogResponse &resp,
             RaftStateType *stateChangeTo) final;
 
-    kevin::raft::RaftError _handleElectionTimerExpired() final;
+    kevin::raft::RaftError _handleElectionTimerExpired(
+            int64_t term,
+            RaftStateType *stateChangeTo) final;
 
 private:
     std::deque<RaftEvent*> m_events;
