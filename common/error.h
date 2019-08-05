@@ -7,6 +7,7 @@
 #define KEVIN_ERROR(catagory, errno, message) \
     kevin::common::Error(kevin::common:: ## catagory, errno, message) \
 
+// TODO(yihao) support format.
 #define KEVIN_ASSERT(predicate, comment) \
     if (!(predicate)) { \
         std::cerr << (comment) << std::endl << std::flush; \

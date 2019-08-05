@@ -42,7 +42,7 @@ protected:
             RaftStateType *stateChangeTo) = 0;
 
     virtual kevin::raft::RaftError _handleAppendLogRequest(
-            const AppendLogRequest &req,
+            AppendLogRequest &req,
             RaftStateType *stateChangeTo,
             std::function<void(AppendLogResponse *)> &&cb) = 0;
 

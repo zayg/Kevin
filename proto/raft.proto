@@ -42,10 +42,13 @@ message AppendLogRequest {
 }
 
 message AppendLogResponse {
+    // Leader should retry based on curr_lsn and curr_term when error_code
+    // is not RAFT_OK.
     int32 error_code = 1;
     // the current term after AppendLog, for leader to update itself
     int64 term = 2;
-    // if the follower has applied these logs or not
-    bool success = 3;
+    // current lsn and term in the follower's data store
+    int64 curr_lsn = 3;
+    int64 curr_term = 4;
 }
 

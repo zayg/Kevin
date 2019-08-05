@@ -93,7 +93,7 @@ RaftGroup::_handleVoteResponse(
 
 RaftError
 RaftGroup::_handleAppendLogRequest(
-        const AppendLogRequest &req,
+        AppendLogRequest &req,
         RaftStateType *stateChangeTo,
         std::function<void(AppendLogResponse *)> &&cb)
 {

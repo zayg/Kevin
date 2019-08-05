@@ -3,6 +3,9 @@
 #include "raft/raft-common.h"
 #include "proto/raft.pb.h"
 
+#include <string>
+#include <vector>
+
 namespace kevin {
 namespace raft {
 
@@ -55,6 +58,10 @@ public:
     inline bool isShadow() const {
         return shadow_;
     }
+
+    kevin::raft::RaftError writeLogRecords(
+            std::vector<std::string> &&log,
+            std::function<void ()> &&cb);
 
 private:
     // Maximum LSN ever sent to this data store (the corresponding log may

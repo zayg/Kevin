@@ -35,7 +35,7 @@ protected:
             RaftStateType *stateChangeTo) final;
 
     kevin::raft::RaftError _handleAppendLogRequest(
-            const AppendLogRequest &req,
+            AppendLogRequest &req,
             RaftStateType *stateChangeTo,
             std::function<void(AppendLogResponse *)> &&cb) final;
 
@@ -71,7 +71,7 @@ protected:
             RaftStateType *stateChangeTo) final;
 
     kevin::raft::RaftError _handleAppendLogRequest(
-            const AppendLogRequest &req,
+            AppendLogRequest &req,
             RaftStateType *stateChangeTo,
             std::function<void(AppendLogResponse *)> &&cb) final;
 
@@ -107,7 +107,7 @@ protected:
             RaftStateType *stateChangeTo) final;
 
     kevin::raft::RaftError _handleAppendLogRequest(
-            const AppendLogRequest &req,
+            AppendLogRequest &req,
             RaftStateType *stateChangeTo,
             std::function<void(AppendLogResponse *)> &&cb) final;
 
