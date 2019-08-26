@@ -124,5 +124,5 @@ private:
 };
 
 } // namespace kevin
-} // namespace raft 
+} // namespace raft
 

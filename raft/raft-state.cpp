@@ -60,7 +60,7 @@ _handleVoteRequest(
     auto *resp = new VoteResponse();
 
     REJECT_LOWER_TERM(metaStore, req, *resp);
-    
+
     // It is safe to update the term here in memory only.
     // The reason is it doestn't violate the 3 invariants:
     // 1. If there is a new votee, we will persist it in the end of this function.
@@ -75,7 +75,7 @@ _handleVoteRequest(
 
     bool noVoteYet = !metaStore->hasPersistedVotee(req.term());
     if ((noVoteYet
-            || MessageDifferencer::Equivalent(metaStore->votee_, req.candidate()))
+            || MessageDifferencer::Equivalent(metaStore->votee_, req.votee()))
         // If the candidate's lsn is at least as new as here
         && metaStore->staleThan(req.latest_term(), req.latest_lsn())) {
 
@@ -84,7 +84,7 @@ _handleVoteRequest(
         *stateChangeTo = RaftStateType::RAFT_STATE_FOLLOWER;
         if (noVoteYet) {
             return metaStore->persistVotee(
-                    req.term(), req.candidate(), std::bind(cb, resp));
+                    req.term(), req.votee(), std::bind(cb, resp));
         }
     }
 
@@ -162,7 +162,7 @@ RaftFollower::_handleAppendLogRequest(
         resp->set_curr_lsn(metaStore->latestLsn_);
         cb(resp);
     }
-    
+
     // Write LRs through raft data store.
     auto *dataStore = m_raftGroup->m_dataStore;
     const int sz = req.logs_size();
@@ -198,7 +198,7 @@ RaftFollower::_handleElectionTimerExpired(int64_t term, RaftStateType *stateChan
     auto *metaStore = m_raftGroup->m_metaStore;
     // Ignore lower term timer expirations.
     if (metaStore->term_ <= term) {
-        metaStore->term_ = term; 
+        metaStore->term_ = term;
         *stateChangeTo = RaftStateType::RAFT_STATE_CANDIDATE;
         return RaftError::RAFT_OK;
     }
@@ -231,8 +231,26 @@ RaftCandidate::_handleVoteResponse(
         const VoteResponse &resp,
         RaftStateType *stateChangeTo)
 {
-    RaftError err;
-    return err;
+    *stateChangeTo = m_type;
+    RaftError ret = RaftError::RAFT_OK;
+    CHANGE_TO_FOLLOWER_IF_TERM_HIGHER(resp, *stateChangeTo, ret);
+    if (unlikely(ret != RaftError::RAFT_OK)) {
+        // change to follower
+        return ret;
+    }
+
+    auto *metaStore = m_raftGroup->m_metaStore;
+    ret = static_cast<RaftError>(resp.error_code());
+    if (ret == RaftError::RAFT_OK) {
+        ret = metaStore->addVote(resp.voter());
+    }
+
+    if (ret == RaftError::RAFT_OK && metaStore->majorityVote()) {
+        // TODO(yihao) when to persist the new term? now?
+        *stateChangeTo = RaftStateType::RAFT_STATE_LEADER;
+    }
+
+    return ret;
 }
 
 
@@ -247,7 +265,7 @@ RaftCandidate::_handleAppendLogRequest(
     // Initialized with its original state.
     *stateChangeTo = m_type;
 
-    auto *metaStore = m_raftGroup->m_metaStore; 
+    auto *metaStore = m_raftGroup->m_metaStore;
     RaftError ret = RaftError::RAFT_OK;
     CHANGE_TO_FOLLOWER_IF_TERM_HIGHER(req, *stateChangeTo, ret);
     // Set error in response.
@@ -358,4 +376,4 @@ RaftLeader::_handleElectionTimerExpired(int64_t term, RaftStateType *stateChange
 }
 
 } // namespace kevin
-} // namespace raft 
+} // namespace raft

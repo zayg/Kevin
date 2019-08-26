@@ -15,7 +15,7 @@ message VoteRequest {
     int64 latest_lsn = 2;
     int64 latest_term = 3;
     // voting candidate
-    ReplicaId candidate = 4;
+    ReplicaId votee = 4;
 }
 
 message VoteResponse {
@@ -24,6 +24,7 @@ message VoteResponse {
     int64 term = 2;
     // the vote count granted to the candidate
     uint32 vote = 3;
+    ReplicaId voter = 4;
 }
 
 message AppendLogRequest {

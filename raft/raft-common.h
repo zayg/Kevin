@@ -23,6 +23,8 @@ enum class RaftError : int32_t {
     RAFT_HIGHER_TERM,
     RAFT_LOWER_TERM,
     RAFT_LOG_MISSING,
+    // ReplicaId is not in the raft group.
+    RAFT_NOT_IN_MEMBERSHIP,
     // Unknown error code. Shouldn't use it.
     RAFT_UNKNOWN
 };
